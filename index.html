@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="it" data-lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EE HOME Script &amp; Gadget - Second Life</title>
+<meta name="description" content="Script e gadget per Second Life. Novità, negozio, Marketplace e un tool gratuito per creare materiali PBR.">
+<link rel="icon" href="immagini/logo-quadrato.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#12141A;color:#E8EAEE;font-family:'DM Sans',system-ui,sans-serif;line-height:1.5}
+a{color:#3FD0C0}a:hover{color:#8CE8DD}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;margin:0}
+html[data-lang="it"] .en{display:none}
+html[data-lang="en"] .it{display:none}
+.wrap{max-width:1232px;margin:0 auto;padding:0 32px}
+.head{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:24px 0}
+.logo{flex:1 1 100%;background:#FEFEFC;border-radius:16px;padding:14px 20px;display:flex;justify-content:center}
+.logo img{width:100%;max-width:700px;height:auto;display:block}
+.bar{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:flex-end;flex:1 1 100%}
+nav{display:flex;flex-wrap:wrap;gap:24px;font-size:16px}
+nav a{text-decoration:none;color:#C9CED8}
+.lang{display:flex;gap:6px}
+.lang button{cursor:pointer;font-family:inherit;font-size:14px;padding:8px 14px;border-radius:8px;background:transparent;color:#C9CED8;border:1px solid #3A4150}
+html[data-lang="it"] #b-it,html[data-lang="en"] #b-en{background:#3FD0C0;color:#0B1D1B;border-color:#3FD0C0}
+.hero{display:flex;flex-wrap:wrap;gap:48px;align-items:center;padding:40px 0 72px}
+.hero .t{flex:1 1 420px;display:flex;flex-direction:column;gap:24px}
+.kick{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#F2B84B}
+h1{font-weight:700;font-size:56px;line-height:1.05}
+.lead{margin:0;font-size:19px;line-height:1.55;color:#A3ABB8;max-width:520px}
+.btns{display:flex;flex-wrap:wrap;gap:14px}
+.b1{background:#3FD0C0;color:#0B1D1B !important;text-decoration:none;font-weight:500;padding:15px 26px;border-radius:10px;font-size:17px}
+.b2{border:1px solid #3A4150;color:#E8EAEE !important;text-decoration:none;padding:15px 26px;border-radius:10px;font-size:17px}
+.hero .p{flex:1 1 360px;display:flex;justify-content:center}
+.hero .p img{width:100%;max-width:460px;aspect-ratio:4/5;object-fit:cover;border-radius:20px;border:1px solid #2A303C;display:block}
+section{padding:8px 0 72px}
+h2{font-weight:700;font-size:34px}
+.about{display:flex;flex-wrap:wrap;gap:40px}
+.about .l{flex:1 1 260px}
+.about .r{flex:2 1 480px;display:flex;flex-direction:column;gap:18px;font-size:18px;line-height:1.65;color:#C9CED8}
+.about .r p{margin:0}
+.ai{display:inline-block;border:1px solid #6B5A33;color:#F2B84B;border-radius:999px;padding:8px 16px;font-size:14px;margin-top:12px}
+.sech{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:24px}
+.sech span.s{color:#A3ABB8;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.card{background:#1B1F28;border:1px solid #2A303C;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.pad{padding:20px;display:flex;flex-direction:column;gap:8px}
+.pad h3{font-size:22px}
+.pad p{margin:0;color:#A3ABB8;font-size:16px;line-height:1.5}
+.pad a{text-decoration:none;font-weight:500;font-size:15px;padding-top:6px}
+.gift{background:#1B1F28;border:1px solid #2A303C;border-radius:18px;padding:36px;display:flex;flex-wrap:wrap;gap:40px}
+.gift>img{flex:1 1 100%;width:100%;height:auto;border-radius:14px;display:block}
+.gift .g1{flex:1 1 320px;display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+.gift .g1 p{margin:0;font-size:17px;line-height:1.6;color:#C9CED8}
+.gift .g2{flex:1 1 360px}
+.gift ol{margin:0;padding-left:1.4rem;display:flex;flex-direction:column;gap:14px;font-size:17px;line-height:1.55;color:#C9CED8}
+.gift strong{color:#E8EAEE}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.link{background:#1B1F28;border:1px solid #2A303C;border-radius:14px;padding:22px;text-decoration:none;display:flex;flex-direction:column;gap:6px;color:#E8EAEE}
+.link:hover{border-color:#2A5F59;color:#E8EAEE}
+.ico{width:44px;height:44px;border-radius:12px;border:1px solid #2A5F59;background:#14262A;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.lt{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px}
+.ld{color:#A3ABB8;font-size:15px;line-height:1.5}
+.go{color:#3FD0C0;font-size:15px;padding-top:4px}
+footer{border-top:1px solid #2A303C;padding:32px 0 48px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;color:#A3ABB8;font-size:14px}
+.fl{display:flex;align-items:center;gap:16px}
+.fl .t{background:#FCFDFA;border-radius:14px;padding:6px;width:88px;height:88px}
+.fl img{width:100%;height:100%;object-fit:contain;display:block}
+@media(max-width:640px){.wrap{padding:0 20px}h1{font-size:38px}h2{font-size:28px}.gift{padding:22px}.hero{gap:32px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="head">
+<div class="logo"><img src="immagini/logo-banner.png" alt="EE HOME Gadget Script"></div>
+<div class="bar">
+<nav>
+<a href="#chisono"><span class="it">Chi sono</span><span class="en">About me</span></a>
+<a href="#novita"><span class="it">Novità</span><span class="en">News</span></a>
+<a href="#regalo"><span class="it">Regalo</span><span class="en">Gift</span></a>
+<a href="#link">Link</a>
+</nav>
+<div class="lang"><button type="button" id="b-it" onclick="setLang('it')">IT</button><button type="button" id="b-en" onclick="setLang('en')">EN</button></div>
+</div>
+</header>
+
+<div class="hero">
+<div class="t">
+<div class="kick">Second Life · <span class="it">dal 2007</span><span class="en">since 2007</span></div>
+<h1><span class="it">Idee buone, gadget simpatici e utili.</span><span class="en">Good ideas, fun and useful gadgets.</span></h1>
+<p class="lead"><span class="it">Creo script e gadget per Second Life, con l’aiuto dell’intelligenza artificiale. E lo dico apertamente.</span><span class="en">I make scripts and gadgets for Second Life, with the help of artificial intelligence. And I say so openly.</span></p>
+<div class="btns">
+<a class="b1" href="https://marketplace.secondlife.com/stores/112669">Marketplace</a>
+<a class="b2" href="https://maps.secondlife.com/secondlife/StoryBrook/162/6/2001"><span class="it">Teleport al negozio</span><span class="en">Teleport to the store</span></a>
+</div>
+</div>
+<div class="p"><img src="immagini/avatar.jpg" alt="Il mio avatar in Second Life"></div>
+</div>
+
+<section id="chisono" class="about">
+<div class="l">
+<h2><span class="it">Chi sono</span><span class="en">About me</span></h2>
+<div class="ai"><span class="it">Creato con l’aiuto dell’IA</span><span class="en">Made with the help of AI</span></div>
+</div>
+<div class="r">
+<p class="it">In Second Life dal 2007, prima con un altro avatar, poi con questo, quello che considero il mio vero volto qui dentro. Nel tempo ho provato un po’ di tutto: discoteche, locali, negozi. All’epoca era tutto molto più difficile da costruire rispetto a oggi.</p>
+<p class="it">Da qualche tempo mi sono avvicinato allo scripting e alla creazione di gadget, stanco di fare sempre le solite cose. In questo percorso uso l’intelligenza artificiale come aiuto per progettare e realizzare i miei prodotti, e lo dico apertamente: mi sembra giusto essere onesto con chi visita il mio negozio.</p>
+<p class="it">Quello che cerco di metterci è sempre lo stesso: buone idee e gadget simpatici, pensati per essere davvero utili a chi li usa.</p>
+<p class="en">In Second Life since 2007, first with another avatar, then with this one, the one I consider my real face here. Over the years I’ve tried a bit of everything: clubs, venues, shops. Back then, building things was a lot harder than it is today.</p>
+<p class="en">More recently I’ve turned to scripting and gadget-making, tired of doing the same old things. Along the way I use artificial intelligence to help design and build my products, and I say so openly: it feels right to be honest with the people who visit my store.</p>
+<p class="en">What I try to bring to every piece is always the same: good ideas and fun gadgets, made to actually be useful to the people who use them.</p>
+</div>
+</section>
+
+<section id="novita">
+<div class="sech"><h2><span class="it">Ultime novità</span><span class="en">Latest news</span></h2><span class="s"><span class="it">Le ultime cose che ho messo in vendita</span><span class="en">The latest things I put on sale</span></span></div>
+<div class="grid">
+<article class="card"><img src="immagini/drone.jpg" alt="SKYRA Drone 3.0" loading="lazy"><div class="pad"><h3>SKYRA Drone 3.0</h3><p><span class="it">Mini drone indossabile con HUD che segue il tuo avatar.</span><span class="en">Wearable mini drone with an HUD that follows your avatar.</span></p><a href="https://marketplace.secondlife.com/p/Skyra-Drone-30/28807947"><span class="it">Vedi sul Marketplace →</span><span class="en">See on the Marketplace →</span></a></div></article>
+<article class="card"><img src="immagini/home-control.jpg" alt="Home Control Full Builder" loading="lazy"><div class="pad"><h3>Home Control Full Builder</h3><p><span class="it">Luci, tende e sicurezza in un solo sistema, con pannelli a muro in vetro e HUD. Per chi costruisce e vende case già pronte da controllare.</span><span class="en">Lights, curtains and security in one system, with glass wall panels and an HUD. For those who build and sell ready-to-control homes.</span></p><a href="https://marketplace.secondlife.com/p/Home-Control-System-30-Builder/28794688"><span class="it">Vedi sul Marketplace →</span><span class="en">See on the Marketplace →</span></a></div></article>
+<article class="card"><img src="immagini/mao-radio.jpg" alt="Mao-Radio Tube Future" loading="lazy"><div class="pad"><h3>Mao-Radio Tube Future</h3><p><span class="it">Radio futuristica a valvole: stazioni per genere, titolo del brano in riproduzione, backup e import delle stazioni, accesso per gruppo e manager.</span><span class="en">Futuristic tube radio: stations by genre, now-playing title, station backup and import, group and manager access.</span></p><a href="https://marketplace.secondlife.com/p/Mao-Radio-Valves-20/28750370"><span class="it">Vedi sul Marketplace →</span><span class="en">See on the Marketplace →</span></a></div></article>
+<article class="card"><img src="immagini/picture-frame.jpg" alt="Picture Frame Studio 2.0" loading="lazy"><div class="pad"><h3>Picture Frame Studio 2.0</h3><p><span class="it">HUD per creare cornici con le tue foto.</span><span class="en">An HUD to create frames with your own photos.</span></p><a href="https://marketplace.secondlife.com/p/EE-Picture-Frame-Studio-20/28722710"><span class="it">Vedi sul Marketplace →</span><span class="en">See on the Marketplace →</span></a></div></article>
+</div>
+</section>
+
+<section id="regalo">
+<div class="gift">
+<img src="immagini/texture-to-pbr.jpg" alt="Texture to PBR">
+<div class="g1">
+<div class="kick">Free tool</div>
+<h2><span class="it">Un regalo per te</span><span class="en">A gift for you</span></h2>
+<p><span class="it">SL Materializer PBR trasforma una qualsiasi immagine in un materiale PBR pronto per Second Life. È gratis, funziona nel browser e le tue immagini non lasciano mai il tuo computer.</span><span class="en">SL Materializer PBR turns any image into a PBR material ready for Second Life. It is free, it runs in your browser, and your images never leave your computer.</span></p>
+<a class="b1" href="materializer/"><span class="it">Apri lo strumento →</span><span class="en">Open the tool →</span></a>
+</div>
+<div class="g2">
+<ol class="it">
+<li><strong>Carica un'immagine</strong> JPG o PNG (meglio 1024x1024).</li>
+<li><strong>Guarda le anteprime:</strong> la sfera 3D e il test delle ripetizioni senza giunzioni visibili.</li>
+<li><strong>Regola il materiale:</strong> ruvidità, metallico, rilievo, luminosità e trasparenza.</li>
+<li><strong>Esporta il file .gltf</strong> e caricalo in Second Life come materiale PBR.</li>
+</ol>
+<ol class="en">
+<li><strong>Load an image,</strong> JPG or PNG (1024x1024 works best).</li>
+<li><strong>Check the previews:</strong> the 3D sphere and the seamless tiling test.</li>
+<li><strong>Tune the material:</strong> roughness, metallic, relief, glow and transparency.</li>
+<li><strong>Export the .gltf file</strong> and upload it to Second Life as a PBR material.</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="link">
+<h2 style="margin-bottom:24px"><span class="it">Dove trovarmi</span><span class="en">Where to find me</span></h2>
+<div class="links">
+<a class="link" href="https://marketplace.secondlife.com/stores/112669"><div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3FD0C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div><span class="lt">Marketplace</span><span class="ld"><span class="it">Tutti i prodotti in vendita, con prezzi e schede.</span><span class="en">All the products for sale, with prices and listings.</span></span><span class="go"><span class="it">Apri →</span><span class="en">Open →</span></span></a>
+<a class="link" href="https://maps.secondlife.com/secondlife/StoryBrook/162/6/2001"><div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3FD0C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div><span class="lt"><span class="it">Il negozio in Second Life</span><span class="en">The store in Second Life</span></span><span class="ld"><span class="it">Vieni a trovarmi di persona: teleport diretto.</span><span class="en">Come and visit me in person: direct teleport.</span></span><span class="go"><span class="it">Apri →</span><span class="en">Open →</span></span></a>
+<a class="link" href="https://www.primfeed.com/etan.elman"><div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3FD0C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-3h5L16 7"/></svg></div><span class="lt">Primfeed</span><span class="ld"><span class="it">Novità, foto e aggiornamenti dal negozio.</span><span class="en">News, photos and updates from the store.</span></span><span class="go"><span class="it">Apri →</span><span class="en">Open →</span></span></a>
+<a class="link" href="https://www.facebook.com/profile.php?id=61594857132795"><div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3FD0C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z"/></svg></div><span class="lt">Facebook</span><span class="ld"><span class="it">La pagina del negozio.</span><span class="en">The store's page.</span></span><span class="go"><span class="it">Apri →</span><span class="en">Open →</span></span></a>
+</div>
+</section>
+
+<footer>
+<div class="fl"><div class="t"><img src="immagini/logo-quadrato.png" alt="Logo EE HOME"></div><span>EE HOME Script &amp; Gadget</span></div>
+<div><span class="it">Prodotti creati con l’aiuto dell’intelligenza artificiale</span><span class="en">Products made with the help of artificial intelligence</span></div>
+</footer>
+
+</div>
+<script>
+function setLang(l){
+  document.documentElement.setAttribute('data-lang',l);
+  document.documentElement.lang=l;
+  try{localStorage.setItem('ee-lang',l)}catch(e){}
+}
+(function(){
+  var l=null;
+  try{l=localStorage.getItem('ee-lang')}catch(e){}
+  if(!l) l=(navigator.language||'').toLowerCase().indexOf('it')===0?'it':'en';
+  setLang(l);
+})();
+</script>
+</body>
+</html>

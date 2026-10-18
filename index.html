@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EE HOME Script &amp; Gadget</title>
+<meta name="description" content="Script e gadget per Second Life: radio, teleporter, sicurezza, luci, texture PBR e utility.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12141A;--card:#1B1F28;--line:#2A303C;--ink:#E8EAEE;--mute:#A3ABB8;--acc:#3FD0C0;--amb:#F2B84B}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;line-height:1.5}
+a{color:var(--acc)}
+h1,h2,h3,.logo{font-family:'Space Grotesk',sans-serif}
+.wrap{max-width:1232px;margin:0 auto;padding:0 24px}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:24px 0}
+.logo{font-weight:700;font-size:22px}.logo span{color:var(--acc)}
+nav{display:flex;flex-wrap:wrap;gap:24px}
+nav a{color:#C9CED8;text-decoration:none}
+.hero{padding:48px 0 64px;max-width:720px}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--amb)}
+.hero h1{font-size:clamp(34px,6vw,60px);line-height:1.05;margin:16px 0}
+.hero p{color:var(--mute);font-size:19px;margin:0 0 24px}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-block;padding:14px 24px;border-radius:10px;text-decoration:none;font-weight:500}
+.btn.main{background:var(--acc);color:#0B1D1B}
+.btn.line{border:1px solid #3A4150;color:var(--ink)}
+section{padding:8px 0 56px}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:20px}
+h2{margin:0;font-size:32px}
+.sub{color:var(--mute);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.card.soon{background:#16181F;border:1px dashed #6B5A33}
+.ph{height:150px;background:repeating-linear-gradient(135deg,#232A36 0,#232A36 12px,#1F2530 12px,#1F2530 24px);display:flex;align-items:center;justify-content:center;color:#6F7888;font-size:13px}
+.card img{width:100%;height:150px;object-fit:cover;display:block}
+.body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.cat{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8F98A8}
+.cat.new,.cat.soon{color:var(--amb)}
+.card h3{margin:0;font-size:20px}
+.card p{margin:0;color:var(--mute);font-size:15px;flex:1}
+.foot{display:flex;align-items:center;justify-content:space-between;padding-top:6px}
+.price{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px}
+.foot a{text-decoration:none;font-weight:500;font-size:15px}
+.pill{align-self:flex-start;border:1px solid #6B5A33;color:var(--amb);border-radius:999px;padding:6px 14px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.chip{cursor:pointer;font:inherit;font-size:15px;padding:10px 18px;border-radius:999px;background:transparent;color:#C9CED8;border:1px solid #3A4150}
+.chip.on{background:var(--acc);color:#0B1D1B;border-color:var(--acc)}
+footer{border-top:1px solid var(--line);padding:36px 0 56px;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;color:var(--mute);font-size:15px}
+footer .links{display:flex;flex-wrap:wrap;gap:20px}
+footer a{text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" id="logo">EE HOME <span>Script &amp; Gadget</span></div>
+    <nav>
+      <a href="#novita">Novità</a>
+      <a href="#arrivo" id="nav-arrivo">In arrivo</a>
+      <a href="#catalogo">Catalogo</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="kicker">Second Life · Script e gadget</div>
+    <h1>Tutti i nostri prodotti, sempre aggiornati.</h1>
+    <p>Radio, teleporter, sicurezza, luci, texture PBR e utility per la tua casa e il tuo locale.</p>
+    <div class="btns">
+      <a class="btn main" id="mk" href="#catalogo">Vai al Marketplace</a>
+      <a class="btn line" id="tp" href="#novita" hidden>Teleport al negozio</a>
+      <a class="btn line" href="#novita">Guarda le novità</a>
+    </div>
+  </div>
+
+  <section id="novita">
+    <div class="head"><h2>Novità</h2><span class="sub">Gli ultimi arrivi</span></div>
+    <div class="grid" id="novita-grid"></div>
+  </section>
+
+  <section id="arrivo">
+    <div class="head"><h2>In arrivo</h2><span class="sub">Presto in vendita</span></div>
+    <div class="grid" id="arrivo-grid"></div>
+  </section>
+
+  <section id="catalogo">
+    <div class="head"><h2>Catalogo</h2><span class="sub" id="count"></span></div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer>
+    <div class="logo" id="foot-name"></div>
+    <div class="links" id="foot-links"></div>
+  </footer>
+</div>
+
+<script>
+function h(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function image(p) {
+  if (p.immagine) { var i = h('img'); i.src = p.immagine; i.alt = p.nome; i.loading = 'lazy'; return i; }
+  return h('div', 'ph', '[foto prodotto]');
+}
+function card(p, mode) {
+  var c = h('article', 'card' + (mode === 'soon' ? ' soon' : ''));
+  c.appendChild(image(p));
+  var b = h('div', 'body');
+  var label = mode === 'new' ? 'Nuovo · ' + p.categoria : mode === 'soon' ? 'In arrivo · ' + p.categoria : p.categoria;
+  b.appendChild(h('div', 'cat ' + (mode || ''), label));
+  b.appendChild(h('h3', '', p.nome));
+  b.appendChild(h('p', '', p.descrizione));
+  if (mode === 'soon') {
+    b.appendChild(h('div', 'pill', 'Presto in vendita'));
+  } else {
+    var f = h('div', 'foot');
+    f.appendChild(h('span', 'price', 'L$ ' + p.prezzo));
+    var a = h('a', '', 'Marketplace →');
+    a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+    f.appendChild(a);
+    b.appendChild(f);
+  }
+  c.appendChild(b);
+  return c;
+}
+function fill(id, list, mode) {
+  var box = document.getElementById(id);
+  box.textContent = '';
+  list.forEach(function (p) { box.appendChild(card(p, mode)); });
+}
+
+fetch('prodotti.json')
+  .then(function (r) { return r.json(); })
+  .then(function (d) {
+    var n = d.negozio || {};
+    if (n.nome) { document.title = n.nome; document.getElementById('logo').textContent = n.nome; document.getElementById('foot-name').textContent = n.nome; }
+    if (n.marketplace) { document.getElementById('mk').href = n.marketplace; }
+    if (n.slurl) { var t = document.getElementById('tp'); t.href = n.slurl; t.hidden = false; }
+    var links = document.getElementById('foot-links');
+    [['Marketplace', n.marketplace], ['Teleport al negozio', n.slurl], ['Primfeed', n.primfeed]].forEach(function (l) {
+      if (l[1]) { var a = h('a', '', l[0]); a.href = l[1]; links.appendChild(a); }
+    });
+
+    var prodotti = d.prodotti || [];
+    fill('novita-grid', prodotti.filter(function (p) { return p.nuovo; }), 'new');
+
+    var soon = d.inarrivo || [];
+    if (soon.length) { fill('arrivo-grid', soon, 'soon'); }
+    else { document.getElementById('arrivo').hidden = true; document.getElementById('nav-arrivo').hidden = true; }
+
+    var cats = ['Tutti'];
+    prodotti.forEach(function (p) { if (cats.indexOf(p.categoria) < 0) cats.push(p.categoria); });
+    var current = 'Tutti';
+    function draw() {
+      var shown = current === 'Tutti' ? prodotti : prodotti.filter(function (p) { return p.categoria === current; });
+      fill('grid', shown, '');
+      document.getElementById('count').textContent = shown.length + ' prodotti';
+      var chips = document.getElementById('chips');
+      chips.textContent = '';
+      cats.forEach(function (c) {
+        var count = c === 'Tutti' ? prodotti.length : prodotti.filter(function (p) { return p.categoria === c; }).length;
+        var b = h('button', 'chip' + (c === current ? ' on' : ''), c + ' · ' + count);
+        b.type = 'button';
+        b.onclick = function () { current = c; draw(); };
+        chips.appendChild(b);
+      });
+    }
+    draw();
+  })
+  .catch(function () {
+    document.getElementById('grid').textContent = 'Impossibile caricare i prodotti. Riprova tra poco.';
+  });
+</script>
+</body>
+</html>

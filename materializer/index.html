@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SL Materializer PBR - free tool by EE HOME</title>
+    <meta name="description" content="Free browser tool: turn any image into a PBR material (.gltf) ready to upload to Second Life. Your images never leave your computer.">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
+    <style>
+        :root {
+            --bg-dark: #12141A;
+            --panel-bg: #1B1F28;
+            --line: #2A303C;
+            --accent: #3FD0C0;
+            --amber: #F2B84B;
+            --text-gray: #A3ABB8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: #E8EAEE;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        a { color: var(--accent); }
+
+        .page { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        .topbar { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; padding: 4px 0 16px; font-size: 0.95rem; }
+        .topbar a { text-decoration: none; }
+
+        .intro { text-align: center; padding: 8px 0 24px; }
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin: 0 0 8px;
+        }
+        .intro p { margin: 0 auto; max-width: 720px; color: var(--text-gray); font-size: 1rem; }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 340px;
+            gap: 20px;
+        }
+
+        .preview-card {
+            background: #000;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            position: relative;
+            overflow: hidden;
+            height: 720px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        .preview-label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #334155;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            z-index: 10;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .settings-panel {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 720px;
+            overflow-y: auto;
+        }
+
+        h3 { font-size: 0.85rem; color: var(--text-gray); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        label { font-size: 0.7rem; color: var(--text-gray); font-weight: 600; text-transform: uppercase; }
+
+        input[type="text"], select {
+            background: #0f172a;
+            border: 1px solid #3A4150;
+            border-radius: 6px;
+            padding: 8px;
+            color: var(--accent);
+            outline: none;
+            font-family: inherit;
+        }
+        input[type="text"]:focus, select:focus { border-color: var(--accent); }
+
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+
+        .check-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .val-display { float: right; color: var(--accent); font-size: 0.75rem; }
+
+        .btn {
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            transition: 0.3s;
+            font-size: 0.8rem;
+            font-family: inherit;
+        }
+
+        .btn-load { background: var(--amber); color: #1B1405; }
+        .btn-export { background: var(--accent); color: #0B1D1B; box-shadow: 0 0 20px rgba(63, 208, 192, 0.25); margin-top: 5px; }
+        .btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        .hidden { display: none; }
+
+        .initial-upload {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+        }
+
+        .howto {
+            margin-top: 32px;
+            background: var(--panel-bg);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 28px 32px;
+        }
+        .howto h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; margin: 0 0 16px; }
+        .howto ol { margin: 0; padding-left: 1.4rem; display: flex; flex-direction: column; gap: 14px; }
+        .howto li { color: #C9CED8; font-size: 1rem; }
+        .howto li strong { color: #E8EAEE; }
+
+        .banner { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); margin: 0 0 20px; }
+        .lang { display: inline-flex; gap: 4px; }
+        .lang button { background: transparent; border: 1px solid var(--line); color: var(--text-gray); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: 0.8rem; font-weight: 700; }
+        .lang button.on { background: var(--accent); color: #0B1D1B; border-color: var(--accent); }
+        .top-right { display: flex; gap: 16px; align-items: center; }
+
+        .foot { margin: 28px 0 12px; text-align: center; color: var(--text-gray); font-size: 0.9rem; }
+
+        @media (max-width: 1100px) {
+            .main-container { grid-template-columns: 1fr; }
+            .preview-card { height: 420px; }
+            .settings-panel { max-height: none; }
+            .howto { padding: 22px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+        <a href="../" data-i18n="back">&larr; Back to EE HOME</a>
+        <div class="top-right">
+            <a href="https://marketplace.secondlife.com/stores/112669" data-i18n="market">Marketplace store</a>
+            <div class="lang"><button type="button" id="lang-it" onclick="setLang('it')">IT</button><button type="button" id="lang-en" onclick="setLang('en')">EN</button></div>
+        </div>
+    </div>
+
+    <img class="banner" src="texture-to-pbr.jpg" alt="Texture to PBR" onerror="this.style.display='none'">
+
+    <div class="intro">
+        <h1 class="header-title">SL Materializer PBR</h1>
+        <p data-i18n="intro">Turn any image into a PBR material (.gltf) ready for Second Life. Free, it runs in your browser, and your images never leave your computer.</p>
+    </div>
+
+    <div class="main-container">
+
+        <!-- Viewport 1: 3D PBR sphere -->
+        <div class="preview-card" id="viewer-container-3d">
+            <div class="preview-label" data-i18n="lbl3d">3D preview (PBR sphere)</div>
+            <div id="upload-prompt" class="initial-upload">
+                <button class="btn btn-load" data-i18n="load" onclick="document.getElementById('file-input').click()">Load base image</button>
+                <p data-i18n="loadHint" style="font-size: 0.8rem; color: var(--text-gray); margin-top: 10px;">JPG or PNG (1024x1024 recommended)</p>
+            </div>
+            <input type="file" id="file-input" class="hidden" accept="image/*">
+        </div>
+
+        <!-- Viewport 2: neutral 2D tiling plane -->
+        <div class="preview-card" id="viewer-container-tiling">
+            <div class="preview-label" data-i18n="lblTile">Seamless tiling test (no PBR)</div>
+        </div>
+
+        <!-- Controls -->
+        <div class="settings-panel">
+            <h3 data-i18n="settings">Material settings</h3>
+
+            <div class="input-group">
+                <label for="mat-name" data-i18n="matName">Material name</label>
+                <input type="text" id="mat-name" value="MyPBRMaterial">
+            </div>
+
+            <div class="input-group">
+                <label for="tiling"><span data-i18n="tiling">SL tiling (repeat)</span> <span class="val-display" id="v-tiling">3x3</span></label>
+                <input type="range" id="tiling" min="1" max="10" step="1" value="3">
+            </div>
+
+            <div class="input-group">
+                <label for="roughness"><span data-i18n="rough">Roughness</span> <span class="val-display" id="v-rough">0.50</span></label>
+                <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5">
+            </div>
+
+            <div class="input-group">
+                <label for="metallic"><span data-i18n="metal">Metallic</span> <span class="val-display" id="v-metal">0.00</span></label>
+                <input type="range" id="metallic" min="0" max="1" step="0.01" value="0">
+            </div>
+
+            <div class="input-group">
+                <label for="normalScale"><span data-i18n="normal">Normal scale</span> <span class="val-display" id="v-normal">1.0</span></label>
+                <input type="range" id="normalScale" min="0" max="3" step="0.1" value="1">
+            </div>
+
+            <div class="input-group">
+                <label for="emissive"><span data-i18n="emis">Emissive intensity</span> <span class="val-display" id="v-emissive">0.00</span></label>
+                <input type="range" id="emissive" min="0" max="1" step="0.05" value="0">
+            </div>
+
+            <div class="input-group">
+                <label for="alphaMode" data-i18n="alphaMode">Alpha mode (transparency)</label>
+                <select id="alphaMode">
+                    <option value="OPAQUE" data-i18n="optOpaque">OPAQUE - no transparency</option>
+                    <option value="MASK" selected data-i18n="optMask">MASK - alpha masking (leaves, branches)</option>
+                    <option value="BLEND" data-i18n="optBlend">BLEND - semi-transparent</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="alphaCutoff"><span data-i18n="cutoff">Alpha cutoff</span> <span class="val-display" id="v-cutoff">0.50</span></label>
+                <input type="range" id="alphaCutoff" min="0.05" max="0.95" step="0.05" value="0.5">
+            </div>
+
+            <div class="input-group">
+                <label class="check-row"><input type="checkbox" id="doubleSided" checked> <span data-i18n="dbl">Double sided</span></label>
+            </div>
+
+            <button class="btn btn-load" data-i18n="change" onclick="document.getElementById('file-input').click()">Change image</button>
+            <button class="btn btn-export" data-i18n="export" onclick="exportGLTF()">Export .GLTF for SL &rarr;</button>
+
+            <p data-i18n="note" style="font-size: 0.65rem; color: var(--text-gray); text-align: center; margin: 0;">
+                Standard glTF made for Second Life PBR<br>Includes base color, normal, ORM (occlusion/roughness/metallic) and emissive maps
+            </p>
+        </div>
+    </div>
+
+    <section class="howto">
+        <h2 data-i18n="howTitle">How to use it</h2>
+        <ol>
+            <li data-i18n="s1"><strong>Load an image.</strong> Click "Load base image" and pick a JPG or PNG (1024x1024 works best). Images are resized to a power of two, up to 2048x2048, as Second Life needs.</li>
+            <li data-i18n="s2"><strong>Check the two previews.</strong> The sphere shows the PBR result with lighting. The flat plane shows how the texture repeats without lighting, so you can spot visible seams. Use "SL tiling" to test different repeats.</li>
+            <li data-i18n="s3"><strong>Tune the material.</strong> Roughness: 0 is shiny, 1 is matte. Metallic: 0 is non-metal, 1 is full metal. Normal scale sets the strength of the relief. Emissive makes the material glow.</li>
+            <li data-i18n="s4"><strong>Set the transparency.</strong> Keep OPAQUE for solid surfaces. Use MASK for leaves, fences and cut-outs (adjust "Alpha cutoff"), and BLEND for semi-transparent surfaces.</li>
+            <li data-i18n="s5"><strong>Name it and export.</strong> Type a material name and click "Export .GLTF for SL". The file downloads with all the maps already inside.</li>
+            <li data-i18n="s6"><strong>Upload it to Second Life.</strong> In the viewer, open Build &rarr; Upload &rarr; Material and choose the .gltf file. Then apply the material to an object face from the Texture tab.</li>
+        </ol>
+    </section>
+
+    <p class="foot" data-i18n="foot">Free tool by <a href="../">EE HOME Script &amp; Gadget</a> &middot; Made with the help of artificial intelligence</p>
+
+</div>
+
+<script>
+
+    // --- Language (IT / EN) ---
+    const I18N = {
+        en: {
+            title: "SL Materializer PBR - free tool by EE HOME",
+            back: "&larr; Back to EE HOME", market: "Marketplace store",
+            intro: "Turn any image into a PBR material (.gltf) ready for Second Life. Free, it runs in your browser, and your images never leave your computer.",
+            lbl3d: "3D preview (PBR sphere)", lblTile: "Seamless tiling test (no PBR)",
+            load: "Load base image", loadHint: "JPG or PNG (1024x1024 recommended)",
+            settings: "Material settings", matName: "Material name",
+            tiling: "SL tiling (repeat)", rough: "Roughness", metal: "Metallic", normal: "Normal scale", emis: "Emissive intensity",
+            alphaMode: "Alpha mode (transparency)",
+            optOpaque: "OPAQUE - no transparency", optMask: "MASK - alpha masking (leaves, branches)", optBlend: "BLEND - semi-transparent",
+            cutoff: "Alpha cutoff", dbl: "Double sided",
+            change: "Change image", export: "Export .GLTF for SL &rarr;",
+            note: "Standard glTF made for Second Life PBR<br>Includes base color, normal, ORM (occlusion/roughness/metallic) and emissive maps",
+            howTitle: "How to use it",
+            s1: "<strong>Load an image.</strong> Click \"Load base image\" and pick a JPG or PNG (1024x1024 works best). Images are resized to a power of two, up to 2048x2048, as Second Life needs.",
+            s2: "<strong>Check the two previews.</strong> The sphere shows the PBR result with lighting. The flat plane shows how the texture repeats without lighting, so you can spot visible seams. Use \"SL tiling\" to test different repeats.",
+            s3: "<strong>Tune the material.</strong> Roughness: 0 is shiny, 1 is matte. Metallic: 0 is non-metal, 1 is full metal. Normal scale sets the strength of the relief. Emissive makes the material glow.",
+            s4: "<strong>Set the transparency.</strong> Keep OPAQUE for solid surfaces. Use MASK for leaves, fences and cut-outs (adjust \"Alpha cutoff\"), and BLEND for semi-transparent surfaces.",
+            s5: "<strong>Name it and export.</strong> Type a material name and click \"Export .GLTF for SL\". The file downloads with all the maps already inside.",
+            s6: "<strong>Upload it to Second Life.</strong> In the viewer, open Build &rarr; Upload &rarr; Material and choose the .gltf file. Then apply the material to an object face from the Texture tab.",
+            foot: "Free tool by <a href=\"../\">EE HOME Script &amp; Gadget</a> &middot; Made with the help of artificial intelligence",
+            alert: "Please load an image first!"
+        },
+        it: {
+            title: "SL Materializer PBR - strumento gratuito di EE HOME",
+            back: "&larr; Torna a EE HOME", market: "Negozio Marketplace",
+            intro: "Trasforma qualsiasi immagine in un materiale PBR (.gltf) pronto per Second Life. Gratuito, funziona nel browser e le tue immagini non lasciano mai il tuo computer.",
+            lbl3d: "Anteprima 3D (sfera PBR)", lblTile: "Test ripetizione senza giunture (no PBR)",
+            load: "Carica immagine base", loadHint: "JPG o PNG (consigliato 1024x1024)",
+            settings: "Impostazioni materiale", matName: "Nome del materiale",
+            tiling: "Ripetizione SL (tiling)", rough: "Rugosità (roughness)", metal: "Metallico (metallic)", normal: "Intensità rilievo (normal)", emis: "Intensità emissiva",
+            alphaMode: "Modalità alpha (trasparenza)",
+            optOpaque: "OPAQUE - nessuna trasparenza", optMask: "MASK - maschera alpha (foglie, rami)", optBlend: "BLEND - semitrasparente",
+            cutoff: "Soglia alpha (cutoff)", dbl: "Doppia faccia",
+            change: "Cambia immagine", export: "Esporta .GLTF per SL &rarr;",
+            note: "glTF standard pensato per il PBR di Second Life<br>Include mappe base color, normal, ORM (occlusione/roughness/metallic) ed emissive",
+            howTitle: "Come si usa",
+            s1: "<strong>Carica un'immagine.</strong> Clicca \"Carica immagine base\" e scegli un JPG o PNG (1024x1024 va benissimo). Le immagini vengono ridimensionate a una potenza di due, fino a 2048x2048, come richiede Second Life.",
+            s2: "<strong>Controlla le due anteprime.</strong> La sfera mostra il risultato PBR con le luci. Il piano piatto mostra come si ripete la texture senza luci, così vedi eventuali giunture. Usa \"Ripetizione SL\" per provare ripetizioni diverse.",
+            s3: "<strong>Regola il materiale.</strong> Roughness: 0 è lucido, 1 è opaco. Metallic: 0 non metallico, 1 tutto metallo. Intensità rilievo regola la forza del rilievo. Emissive fa brillare il materiale.",
+            s4: "<strong>Imposta la trasparenza.</strong> Lascia OPAQUE per le superfici solide. Usa MASK per foglie, recinzioni e ritagli (regola la \"Soglia alpha\") e BLEND per le superfici semitrasparenti.",
+            s5: "<strong>Dai un nome ed esporta.</strong> Scrivi il nome del materiale e clicca \"Esporta .GLTF per SL\". Il file si scarica con tutte le mappe già dentro.",
+            s6: "<strong>Caricalo su Second Life.</strong> Nel viewer apri Costruisci &rarr; Carica &rarr; Materiale e scegli il file .gltf. Poi applica il materiale a una faccia dell'oggetto dalla scheda Texture.",
+            foot: "Strumento gratuito di <a href=\"../\">EE HOME Script &amp; Gadget</a> &middot; Realizzato con l'aiuto dell'intelligenza artificiale",
+            alert: "Carica prima un'immagine!"
+        }
+    };
+    let currentLang = 'en';
+    function setLang(l) {
+        if (!I18N[l]) l = 'en';
+        currentLang = l;
+        const d = I18N[l];
+        document.documentElement.lang = l;
+        document.title = d.title;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            if (d[k] !== undefined) el.innerHTML = d[k];
+        });
+        document.getElementById('lang-it').classList.toggle('on', l === 'it');
+        document.getElementById('lang-en').classList.toggle('on', l === 'en');
+        try { localStorage.setItem('ee-lang', l); } catch (e) {}
+    }
+    (function initLang() {
+        let l = null;
+        try { l = localStorage.getItem('ee-lang'); } catch (e) {}
+        if (!l) l = (navigator.language || '').toLowerCase().startsWith('it') ? 'it' : 'en';
+        setLang(l);
+    })();
+    let scene3D, camera3D, renderer3D, sphere;
+    let sceneTile, cameraTile, rendererTile, planeTile;
+    let material3D, materialTile;
+    let animating = false;
+
+    let baseImg = null;
+    let baseCanvas, normCanvas, ormCanvas, emissiveCanvas;
+
+    const fileInput = document.getElementById('file-input');
+
+    document.getElementById('alphaMode').onchange = () => updatePBRTextures();
+    document.getElementById('alphaCutoff').oninput = (e) => {
+        document.getElementById('v-cutoff').innerText = parseFloat(e.target.value).toFixed(2);
+        updatePBRTextures();
+    };
+    document.getElementById('doubleSided').onchange = () => updatePBRTextures();
+
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            baseImg = new Image();
+            baseImg.onload = () => {
+                initScenes();
+                updatePBRTextures();
+            };
+            baseImg.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    function initScenes() {
+        document.getElementById('upload-prompt').classList.add('hidden');
+
+        // --- 1. PBR sphere scene ---
+        const container3D = document.getElementById('viewer-container-3d');
+        if(renderer3D) container3D.removeChild(renderer3D.domElement);
+
+        scene3D = new THREE.Scene();
+        camera3D = new THREE.PerspectiveCamera(45, container3D.clientWidth / container3D.clientHeight, 0.1, 100);
+        camera3D.position.z = fitZ(camera3D.aspect, 2.8, 1.15);
+
+        renderer3D = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer3D.setSize(container3D.clientWidth, container3D.clientHeight);
+        container3D.appendChild(renderer3D.domElement);
+
+        addLighting(scene3D);
+
+        material3D = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 1.0 });
+        sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 128), material3D);
+        scene3D.add(sphere);
+
+        // --- 2. Neutral 2D tiling plane (no PBR, no lights) ---
+        const containerTile = document.getElementById('viewer-container-tiling');
+        if(rendererTile) containerTile.removeChild(rendererTile.domElement);
+
+        sceneTile = new THREE.Scene();
+        cameraTile = new THREE.PerspectiveCamera(45, containerTile.clientWidth / containerTile.clientHeight, 0.1, 100);
+        cameraTile.position.z = fitZ(cameraTile.aspect, 2.4, 1.05);
+
+        rendererTile = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        rendererTile.setSize(containerTile.clientWidth, containerTile.clientHeight);
+        containerTile.appendChild(rendererTile.domElement);
+
+        materialTile = new THREE.MeshBasicMaterial();
+        planeTile = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), materialTile);
+        sceneTile.add(planeTile);
+
+        // --- Bind control events ---
+        document.getElementById('tiling').oninput = (e) => {
+            const val = parseInt(e.target.value);
+            document.getElementById('v-tiling').innerText = `${val}x${val}`;
+            updatePBRTextures();
+        };
+        document.getElementById('roughness').oninput = (e) => {
+            document.getElementById('v-rough').innerText = parseFloat(e.target.value).toFixed(2);
+            updatePBRTextures();
+        };
+        document.getElementById('metallic').oninput = (e) => {
+            document.getElementById('v-metal').innerText = parseFloat(e.target.value).toFixed(2);
+            updatePBRTextures();
+        };
+        document.getElementById('normalScale').oninput = (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('v-normal').innerText = val.toFixed(1);
+            if(material3D) material3D.normalScale.set(val, val);
+        };
+        document.getElementById('emissive').oninput = (e) => {
+            document.getElementById('v-emissive').innerText = parseFloat(e.target.value).toFixed(2);
+            updatePBRTextures();
+        };
+
+        if(!animating) { animating = true; animate(); }
+    }
+
+    // Camera distance that keeps an object of half-size `half` fully visible,
+    // also when the preview box is narrower than it is tall
+    function fitZ(aspect, base, half) {
+        return Math.max(base, half / (Math.tan(Math.PI / 8) * aspect));
+    }
+
+    function handleResize() {
+        const c3 = document.getElementById('viewer-container-3d');
+        const ct = document.getElementById('viewer-container-tiling');
+        if(renderer3D && camera3D) {
+            camera3D.aspect = c3.clientWidth / c3.clientHeight;
+            camera3D.position.z = fitZ(camera3D.aspect, 2.8, 1.15);
+            camera3D.updateProjectionMatrix();
+            renderer3D.setSize(c3.clientWidth, c3.clientHeight);
+        }
+        if(rendererTile && cameraTile) {
+            cameraTile.aspect = ct.clientWidth / ct.clientHeight;
+            cameraTile.position.z = fitZ(cameraTile.aspect, 2.4, 1.05);
+            cameraTile.updateProjectionMatrix();
+            rendererTile.setSize(ct.clientWidth, ct.clientHeight);
+        }
+    }
+    window.addEventListener('resize', handleResize);
+
+    function addLighting(targetScene) {
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        targetScene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        mainLight.position.set(1, 1, 5);
+        targetScene.add(mainLight);
+
+        const backLight = new THREE.PointLight(0xffffff, 0.5);
+        backLight.position.set(-5, 2, -5);
+        targetScene.add(backLight);
+    }
+
+    // --- MAP CANVAS GENERATION ---
+    // Second Life maximum texture size
+    const SL_MAX_TEX = 2048;
+
+    // Second Life needs powers of two (e.g. 512, 1024, 2048), 2048 max
+    function nearestPOT(v) {
+        const p = Math.round(Math.log2(Math.max(1, v)));
+        return Math.min(SL_MAX_TEX, Math.pow(2, p));
+    }
+
+    function getSLSize(w, h) {
+        return { w: nearestPOT(w), h: nearestPOT(h) };
+    }
+
+    function generateBaseCanvas(img) {
+        const s = getSLSize(img.width, img.height);
+        const canvas = document.createElement('canvas');
+        canvas.width = s.w; canvas.height = s.h;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, s.w, s.h);
+        return canvas;
+    }
+
+    function generateNormalMap(img, scale) {
+        const canvas = document.createElement('canvas');
+        const s = getSLSize(img.width, img.height);
+        const w = s.w, h = s.h;
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+        const normData = ctx.createImageData(w, h);
+        const out = normData.data;
+
+        const gray = new Float32Array(w * h);
+        for(let i = 0; i < data.length; i += 4) {
+            gray[i/4] = (data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114) / 255.0;
+        }
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                let x0 = x > 0 ? x - 1 : x, x1 = x < w - 1 ? x + 1 : x;
+                let y0 = y > 0 ? y - 1 : y, y1 = y < h - 1 ? y + 1 : y;
+
+                let dx = (gray[y * w + x1] - gray[y * w + x0]) * scale * 2.0;
+                let dy = (gray[y1 * w + x] - gray[y0 * w + x]) * scale * 2.0;
+                let dz = 1.0;
+
+                let len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                let nx = (dx / len) * 0.5 + 0.5;
+                let ny = (dy / len) * 0.5 + 0.5;
+                let nz = (dz / len) * 0.5 + 0.5;
+
+                let idx = (y * w + x) * 4;
+                out[idx]     = nx * 255;
+                out[idx + 1] = ny * 255;
+                out[idx + 2] = nz * 255;
+                out[idx + 3] = 255;
+            }
+        }
+        ctx.putImageData(normData, 0, 0);
+        return canvas;
+    }
+
+    function generateORMMap(w, h, roughVal, metalVal) {
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.createImageData(w, h);
+        const data = imgData.data;
+
+        const r = 255; // Ambient Occlusion 100%
+        const g = Math.round(roughVal * 255);
+        const b = Math.round(metalVal * 255);
+
+        for (let i = 0; i < data.length; i += 4) {
+            data[i]     = r;
+            data[i + 1] = g;
+            data[i + 2] = b;
+            data[i + 3] = 255;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        return canvas;
+    }
+
+    function generateEmissiveMap(img, emissiveVal) {
+        const canvas = document.createElement('canvas');
+        const s = getSLSize(img.width, img.height);
+        const w = s.w, h = s.h;
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            data[i]     = Math.round(data[i] * emissiveVal);
+            data[i + 1] = Math.round(data[i + 1] * emissiveVal);
+            data[i + 2] = Math.round(data[i + 2] * emissiveVal);
+            data[i + 3] = 255;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        return canvas;
+    }
+
+    // --- TEXTURES & MATERIALS UPDATE ---
+    function disposeMaps(mat, keys) {
+        keys.forEach(k => { if(mat && mat[k]) mat[k].dispose(); });
+    }
+
+    function updatePBRTextures() {
+        if(!baseImg || !material3D || !materialTile) return;
+
+        const roughVal = parseFloat(document.getElementById('roughness').value);
+        const metalVal = parseFloat(document.getElementById('metallic').value);
+        const normScale = parseFloat(document.getElementById('normalScale').value);
+        const emissiveVal = parseFloat(document.getElementById('emissive').value);
+        const tileVal = parseInt(document.getElementById('tiling').value);
+
+        baseCanvas = generateBaseCanvas(baseImg);
+        normCanvas = generateNormalMap(baseImg, normScale);
+        ormCanvas = generateORMMap(baseCanvas.width, baseCanvas.height, roughVal, metalVal);
+        emissiveCanvas = generateEmissiveMap(baseImg, emissiveVal);
+
+        // Free the previous GPU textures before creating new ones
+        disposeMaps(material3D, ['map', 'normalMap', 'aoMap', 'emissiveMap']);
+        disposeMaps(materialTile, ['map']);
+
+        // Textures for the PBR sphere (tiling 1x1)
+        const baseTex3D = new THREE.CanvasTexture(baseCanvas);
+        const normTex3D = new THREE.CanvasTexture(normCanvas);
+        const ormTex3D = new THREE.CanvasTexture(ormCanvas);
+        const emissiveTex3D = new THREE.CanvasTexture(emissiveCanvas);
+
+        applyPBRMaterialProps(material3D, baseTex3D, normTex3D, ormTex3D, emissiveTex3D, emissiveVal);
+
+        // Flat texture for the tiling plane (no lights, no PBR glow)
+        const baseTexTile = new THREE.CanvasTexture(baseCanvas);
+        baseTexTile.wrapS = THREE.RepeatWrapping;
+        baseTexTile.wrapT = THREE.RepeatWrapping;
+        baseTexTile.repeat.set(tileVal, tileVal);
+
+        materialTile.map = baseTexTile;
+        materialTile.needsUpdate = true;
+    }
+
+    function applyPBRMaterialProps(mat, base, norm, orm, emissive, emissiveVal) {
+        [base, norm, orm, emissive].forEach(tex => {
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(1, 1);
+        });
+
+        mat.map = base;
+        mat.normalMap = norm;
+        mat.aoMap = orm;
+        mat.roughnessMap = orm;
+        mat.metalnessMap = orm;
+        mat.emissiveMap = emissive;
+        mat.emissive.setHex(0xffffff);
+        mat.emissiveIntensity = emissiveVal > 0 ? 1.0 : 0.0;
+
+        mat.roughness = 1.0;
+        mat.metalness = 1.0;
+        const am = document.getElementById('alphaMode').value;
+        mat.alphaTest = (am === 'MASK') ? parseFloat(document.getElementById('alphaCutoff').value) : 0;
+        mat.transparent = (am === 'BLEND');
+        mat.side = document.getElementById('doubleSided').checked ? THREE.DoubleSide : THREE.FrontSide;
+        mat.needsUpdate = true;
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if(sphere) sphere.rotation.y += 0.003;
+        if(renderer3D && scene3D) renderer3D.render(scene3D, camera3D);
+        if(rendererTile && sceneTile) rendererTile.render(sceneTile, cameraTile);
+    }
+
+    // Fixes the glTF for Second Life: alpha mode in the material, double sided,
+    // upright (not flipped) images as PNG with alpha. The base color uses the original PNG,
+    // so colors under transparent areas do not turn black.
+    function patchResultForSL(result) {
+        const mode = document.getElementById('alphaMode').value;
+        const cutoff = parseFloat(document.getElementById('alphaCutoff').value);
+        const dbl = document.getElementById('doubleSided').checked;
+
+        const setImg = (texInfo, dataUrl) => {
+            if (!texInfo || !dataUrl || !result.textures) return;
+            const tex = result.textures[texInfo.index];
+            if (!tex || !result.images || !result.images[tex.source]) return;
+            const img = result.images[tex.source];
+            img.uri = dataUrl;
+            img.mimeType = 'image/png';
+            delete img.bufferView;
+        };
+
+        // Use the original PNG only if it is already a power of two and <= 2048; otherwise the resized version
+        const baseFits = baseImg &&
+            baseImg.width === nearestPOT(baseImg.width) &&
+            baseImg.height === nearestPOT(baseImg.height);
+        const basePNG = (baseFits && baseImg.src.startsWith('data:image/png'))
+            ? baseImg.src
+            : (baseCanvas ? baseCanvas.toDataURL('image/png') : null);
+        const normPNG = normCanvas ? normCanvas.toDataURL('image/png') : null;
+        const ormPNG = ormCanvas ? ormCanvas.toDataURL('image/png') : null;
+        const emisPNG = emissiveCanvas ? emissiveCanvas.toDataURL('image/png') : null;
+
+        (result.materials || []).forEach(m => {
+            const pbr = m.pbrMetallicRoughness || {};
+            delete m.alphaCutoff;
+            if (mode === 'MASK') { m.alphaMode = 'MASK'; m.alphaCutoff = cutoff; }
+            else if (mode === 'BLEND') { m.alphaMode = 'BLEND'; }
+            else { delete m.alphaMode; }
+            m.doubleSided = dbl;
+
+            setImg(pbr.baseColorTexture, basePNG);
+            setImg(m.normalTexture, normPNG);
+            setImg(pbr.metallicRoughnessTexture, ormPNG);
+            setImg(m.occlusionTexture, ormPNG);
+            setImg(m.emissiveTexture, emisPNG);
+        });
+    }
+
+    function exportGLTF() {
+        if(!sphere) { alert(I18N[currentLang].alert); return; }
+
+        const exporter = new THREE.GLTFExporter();
+        const fileName = document.getElementById('mat-name').value || "material_sl";
+
+        exporter.parse(sphere, (result) => {
+            patchResultForSL(result);
+            const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName + ".gltf";
+            link.click();
+        }, {
+            binary: false,
+            embedImages: true
+        });
+    }
+</script>
+</body>
+</html>
